@@ -1,0 +1,47 @@
+# Data — too large for git
+data/raw/
+data/processed/
+data/splits/
+
+# Trained models
+models/*.joblib
+models/*.pkl
+models/hyperparams/
+
+# Results (regenerable)
+results/figures/
+results/tables/
+results/logs/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Misc
+*.log
+*.tmp

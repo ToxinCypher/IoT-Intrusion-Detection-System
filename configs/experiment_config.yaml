@@ -1,0 +1,152 @@
+# ============================================================
+# Experiment Configuration — IoT IDS ML Project
+# ============================================================
+
+# --- Paths ---
+paths:
+  raw_data_dir: "data/raw"
+  processed_data_dir: "data/processed"
+  splits_dir: "data/splits"
+  models_dir: "models"
+  figures_dir: "results/figures"
+  tables_dir: "results/tables"
+  logs_dir: "results/logs"
+
+# --- Data Loading ---
+data:
+  # Fraction of each CSV file to sample during loading (1.0 = full data)
+  sample_frac: 0.1
+  # Random seed for reproducibility
+  random_state: 42
+  # Target label column name in the CSV files
+  label_column: "label"
+  # Reduce memory by casting float64 -> float32
+  reduce_memory: true
+
+# --- Preprocessing ---
+preprocessing:
+  # Drop features with variance below this threshold
+  variance_threshold: 0.01
+  # Drop one of feature pairs with correlation above this threshold
+  correlation_threshold: 0.95
+  # Number of top features to select via mutual information
+  mi_top_k: 30
+  # Test set fraction
+  test_size: 0.2
+  # Validation set fraction (from remaining after test split)
+  val_size: 0.1
+
+# --- Label Mapping ---
+# Maps 34 fine-grained attack types to 8 coarse categories + Benign
+label_categories:
+  BenignTraffic: "Benign"
+  DDoS-RSTFINFlood: "DDoS"
+  DDoS-PSHACK_Flood: "DDoS"
+  DDoS-SYN_Flood: "DDoS"
+  DDoS-UDP_Flood: "DDoS"
+  DDoS-TCP_Flood: "DDoS"
+  DDoS-ICMP_Flood: "DDoS"
+  DDoS-SynonymousIP_Flood: "DDoS"
+  DDoS-ACK_Fragmentation: "DDoS"
+  DDoS-UDP_Fragmentation: "DDoS"
+  DDoS-ICMP_Fragmentation: "DDoS"
+  DDoS-SlowLoris: "DDoS"
+  DDoS-HTTP_Flood: "DDoS"
+  DoS-UDP_Flood: "DoS"
+  DoS-SYN_Flood: "DoS"
+  DoS-TCP_Flood: "DoS"
+  DoS-HTTP_Flood: "DoS"
+  Mirai-greeth_flood: "Mirai"
+  Mirai-greip_flood: "Mirai"
+  Mirai-udpplain: "Mirai"
+  Recon-PingSweep: "Recon"
+  Recon-OSScan: "Recon"
+  Recon-PortScan: "Recon"
+  Recon-HostDiscovery: "Recon"
+  VulnerabilityScan: "Recon"
+  BrowserHijacking: "Web"
+  CommandInjection: "Web"
+  SqlInjection: "Web"
+  XSS: "Web"
+  Backdoor_Malware: "Web"
+  Uploading_Attack: "Web"
+  MITM-ArpSpoofing: "Spoofing"
+  DNS_Spoofing: "Spoofing"
+  DictionaryBruteForce: "BruteForce"
+
+# --- Models ---
+models:
+  decision_tree:
+    param_grid:
+      max_depth: [10, 15, 20, null]
+      min_samples_split: [2, 5, 10]
+      criterion: ["gini", "entropy"]
+    cv_folds: 5
+
+  random_forest:
+    param_grid:
+      n_estimators: [100, 200, 500]
+      max_depth: [15, 20, null]
+      min_samples_split: [2, 5]
+      max_features: ["sqrt", "log2"]
+    cv_folds: 3
+    n_iter: 20  # RandomizedSearchCV iterations
+
+  xgboost:
+    param_grid:
+      n_estimators: [100, 200, 500]
+      max_depth: [6, 10, 15]
+      learning_rate: [0.01, 0.1, 0.3]
+      subsample: [0.8, 1.0]
+    cv_folds: 3
+    n_iter: 15
+    early_stopping_rounds: 10
+
+  logistic_regression:
+    param_grid:
+      C: [0.01, 0.1, 1.0, 10.0]
+      max_iter: [1000]
+      solver: ["lbfgs"]
+
+  knn:
+    param_grid:
+      n_neighbors: [3, 5, 10]
+      weights: ["uniform", "distance"]
+      metric: ["euclidean", "manhattan"]
+
+# --- Explainability ---
+explainability:
+  shap:
+    # Number of samples for SHAP computation (memory constraint)
+    n_samples: 5000
+    # Number of top features for dependence plots
+    top_k_dependence: 5
+  lime:
+    # Number of samples to explain
+    n_samples: 100
+    # Number of features in LIME explanation
+    num_features: 15
+
+# --- Zero-Day Experiment ---
+zero_day:
+  # Attack types to hold out (3 configurations, rotate)
+  holdout_configs:
+    config_1: ["Backdoor_Malware", "MITM-ArpSpoofing", "SqlInjection"]
+    config_2: ["XSS", "DNS_Spoofing", "Mirai-udpplain"]
+    config_3: ["CommandInjection", "DictionaryBruteForce", "Recon-OSScan"]
+
+# --- Evaluation ---
+evaluation:
+  # Metrics to compute for all models
+  metrics:
+    - accuracy
+    - macro_f1
+    - weighted_f1
+    - macro_precision
+    - macro_recall
+    - per_class_f1
+    - confusion_matrix
+    - roc_auc_ovr
+    - training_time
+    - inference_latency
+    - model_size_kb
