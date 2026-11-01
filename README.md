@@ -36,9 +36,26 @@ pip install -r requirements.txt
 # 4. Run EDA
 python notebooks/01_data_loading_eda.py
 
-# 5. Run full pipeline (after data is ready)
-# See notebooks/ for step-by-step execution
+# 5. Launch Frontend & Live Flow Inspector
+python run_app.py
+# Access dashboard at http://127.0.0.1:8000
 ```
+
+## Interactive Web Dashboard (Frontend)
+
+The project includes an interactive web dashboard built with **React, Vite, Tailwind CSS, and FastAPI**:
+- **Live Network Flow Inspector**: Test individual flow vectors across all 40 features or edge-pruned 15 features.
+- **Curated Test Presets**: 1-click injection of real network traffic flows (Benign, Mirai, DDoS, DoS, Recon, Web, Spoofing, BruteForce) sampled directly from the CICIoT2023 test set.
+- **Real-Time Edge Telemetry**: Microsecond-precision inference latency measurements (~30-50ns for Decision Trees).
+- **Batch CSV Audit**: Upload bulk flow CSV logs for automated threat breakdown and throughput analysis.
+- **Benchmark Comparison**: Side-by-side performance comparison against Alve et al. (2025).
+
+```bash
+# To run both the backend API and frontend:
+python run_app.py
+
+# For frontend development mode with HMR:
+cd frontend && npm run dev
 
 ## Project Structure
 
